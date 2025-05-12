@@ -1,0 +1,291 @@
+<mvc:View
+    controllerName="freestyle.zmrpa.v2.controller.Data"
+    xmlns="sap.ui.table"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:m="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core"
+    xmlns:mode="sap.ui.table.rowmodes"
+>
+    <m:Page
+        id="page"
+        title="{i18n>title}"
+        showHeader="false"
+        showNavButton="true"
+		navButtonPress="onNavBack"
+    >
+        <m:content>
+            <TreeTable
+                id="TreeTable"
+                rows="{path:'/material_by_mrp_and_customer', parameters: { arrayNames:['data']}}"
+                selectionMode="None"
+                rowsUpdated=".onRowsUpdated"
+                fixedColumnCount="1"
+                enableBusyIndicator="true"
+                class="sapUiTinyMarginBeginEnd sapUiTinyMarginTopBottom"
+                width="auto"
+                rowMode="Auto"
+                showNoData="false"
+            >
+                <extension>
+                    <m:OverflowToolbar
+                        id="_IDGenOverflowToolbar"
+                        style="Clear"
+                    >
+                        <m:ToolbarSpacer id="_IDGenToolbarSpacer1" />
+                        <m:Button
+                            id="_IDGenPreviousMaterial"
+                            text="Previous"
+                            press="onPreviousMaterial"
+                        />
+                        <m:Button
+                            id="_IDGenNextMaterial"
+                            text="Next"
+                            press="onNextMaterial"
+                        />
+                        <m:Button
+                            id="_IDGenButton3"
+                            text="Collapse"
+                            press="onCollapseAll"
+                        />
+                        <m:Button
+                            id="_IDGenButton4"
+                            text="Expand"
+                            press="onExpandFirstLevel"
+                        />
+                        <m:Button
+                            id="_IDRefreshButton"
+                            text="Refresh"
+                            press="onRefresh"
+                        />
+                        <m:Button
+                            id="_IDGenButton5"
+                            press="onExport"
+                            text="Export to File"
+                        />
+                    </m:OverflowToolbar>
+                </extension>
+                <columns>
+                    <Column
+                        id="_IDGenColumn"
+                        width="12rem"
+                    >
+                        <m:Label
+                            id="_IDGenHeaderLabel"
+                            text="Material/MRP/Customer"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDGenText"
+                                text="{name}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn1"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel1"
+                            text="Open Delivery"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDTextOpenDelivery"
+                                text="{openDelivery}"
+                                wrapping="false"
+                                visible="{= !!%{openDelivery} || %{openDelivery} === 0}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn2"
+                        width="4rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel2"
+                            text="BO Qty"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDTextBOQty"
+                                text="{boQty}"
+                                wrapping="false"
+                                visible="{= !!%{boQty} || %{boQty} === 0}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn3"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel3"
+                            text="UNR (Current)"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDTextCurrentUNR"
+                                text="{currentUNR}"
+                                wrapping="false"
+                                visible="{= !!${currentUNR}}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn4"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel4"
+                            text="UNR (New)"
+                        />
+                        <template>
+                            <m:Input
+                                id="_IDInputNewUNR"
+                                type="Text"
+                                value="{newUNR}"
+                                change="onChangeMRP"
+                                visible="{= !!%{newUNR} || %{newUNR} === 0}"
+                                editable="{= !!%{newUNR} || %{newUNR} === 0}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn5"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel5"
+                            text="QA (Current)"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDTextCurrentQA"
+                                text="{currentQA}"
+                                wrapping="false"
+                                visible="{= !!${currentQA}}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn6"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel6"
+                            text="QA (New)"
+                        />
+                        <template>
+                            <m:Input
+                                id="_IDInputNewQA"
+                                type="Text"
+                                value="{newQA}"
+                                change="onChangeMRP"
+                                visible="{= !!%{newQA} || %{newQA} === 0}"
+                                editable="{= !!%{newQA} || %{newQA} === 0}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn7"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel7"
+                            text="Block (Current)"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDTextCurrentBlock"
+                                text="{currentBlock}"
+                                wrapping="false"
+                                visible="{= !!${currentBlock}}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn8"
+                        width="7rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel8"
+                            text="Block (New)"
+                        />
+                        <template>
+                            <m:Input
+                                id="_IDInputNewBlock"
+                                type="Text"
+                                value="{newBlock}"
+                                change="onChangeMRP"
+                                visible="{= !!%{newBlock} || %{newBlock} === 0}"
+                                editable="{= !!%{newBlock} || %{newBlock} === 0}"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column
+                        id="_IDGenColumn9"
+                        width="9rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel9"
+                            text="May 2025 (Current)"
+                        />
+                        <template>
+                            <m:Text
+                                id="_IDTextCurrentAvailable"
+                                text="{currentAvailable}"
+                                wrapping="false"
+                                visible="{= !!%{currentAvailable} || %{currentAvailable} === 0}"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="_IDGenColumn10"
+                        width="9rem"
+                    >
+                        <m:Label
+                            id="_IDGenLabel10"
+                            text="May 2025 (New)"
+                        />
+                        <template>
+                            <m:Input
+                                id="_IDInputNewAvailable"
+                                type="Text"
+                                value="{newAvailable}"
+                                change="onChangeNewAvailable"
+                                visible="{= !!%{newAvailable} || %{newAvailable} === 0}"
+                                editable="{= !!%{newAvailable} || %{newAvailable} === 0}"
+                            />
+                        </template>
+                    </Column>
+                </columns>
+            </TreeTable>
+        </m:content>
+        <m:footer>
+            <m:OverflowToolbar id="_IDGenOverflowToolbar1" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTopBottom">
+                <m:Button
+                    id="messageViewBtn"
+                    visible="{=!!${messages>/}.length}"
+                    icon="{ path: 'messages>/', formatter: '.buttonIconFormatter' }"
+                    type="{ path: 'messages>/', formatter: '.buttonTypeFormatter' }"
+                    text="{ path: 'messages>/', formatter: '.highestSeverityMessages' }"
+                    press=".handleMessageViewPress"
+                />
+                <m:ToolbarSpacer id="_IDGenToolbarSpacer" />
+                <m:Button
+                    id="_IDGenButton"
+                    type="Emphasized"
+                    text="Save"
+                    press="onSave"
+                />
+                <m:Button
+                    id="_IDGenButton2"
+                    text="Cancel"
+                />
+            </m:OverflowToolbar>
+        </m:footer>
+    </m:Page>
+</mvc:View>

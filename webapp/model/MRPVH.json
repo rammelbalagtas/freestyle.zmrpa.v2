@@ -1,0 +1,20 @@
+{
+    "MRPCollection": [
+        {
+            "MRP": "NSRST",
+            "Name": "NSRST 1"
+        },
+        {
+            "MRP": "PAMZT1",
+            "Name": "PAMZT 2"
+        },
+        {
+            "MRP": "PAMZT1",
+            "Name": "PAMZT 3"
+        },
+        {
+            "MRP": "PAMZT1",
+            "Name": "PAMZT 4"
+        }
+    ]
+}

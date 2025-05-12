@@ -1,0 +1,20 @@
+{
+    "MaterialsCollection": [
+        {
+            "ProductId": "KXTGD390A",
+            "Name": "Material 1"
+        },
+        {
+            "ProductId": "KXTGD390B",
+            "Name": "Material 2"
+        },
+        {
+            "ProductId": "KXTGD390C",
+            "Name": "Material 3"
+        },
+        {
+            "ProductId": "KXTGD390D",
+            "Name": "Material 4"
+        }
+    ]
+}

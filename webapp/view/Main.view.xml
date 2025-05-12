@@ -1,0 +1,101 @@
+<mvc:View
+    controllerName="freestyle.zmrpa.v2.controller.Main"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        id="_IDGenPage"
+        class="sapUiResponsiveContentPadding"
+    >
+        <form:SimpleForm
+            id="_IDGenSimpleForm"
+            editable="true"
+            layout="ResponsiveGridLayout"
+        >
+            <form:toolbar>
+                <Toolbar id="TB1">
+                    <Title
+                        id="Title1"
+                        text="Parameters"
+                    />
+                    <ToolbarSpacer id="_IDGenToolbarSpacer2" />
+                    <Button
+                        id="executeBtn"
+                        text="{i18n>ExecuteButton}"
+                        press=".onPressExecute"
+                    />
+                </Toolbar>
+            </form:toolbar>
+            <Label
+                id="_IDLabelPlant"
+                text="Plant"
+            />
+            <Input
+                id="_IDInputPlant"
+                textFormatMode="Value"
+                valueHelpRequest=".onValueHelpRequestPlant"
+                showValueHelp="true"
+                showSuggestion="true"
+                width="10%"
+                suggestionItems="{Plants>/PlantsCollection}"
+                suggestionItemSelected=".onSuggestionItemSelectedPlant"
+            >
+                <suggestionItems>
+                    <core:ListItem
+                        id="_IDGenListItemPlant"
+                        key="{Plants>Name}"
+                        text="{Plants>Plant}"
+                    />
+                </suggestionItems>
+            </Input>
+            <Label
+                id="_IDLabelMaterial"
+                text="Material"
+            />
+            <MultiInput
+                width="40%"
+                id="_multiInputMaterial"
+                showSuggestion="true"
+                suggestionItems="{ path: 'Materials>/MaterialsCollection',
+				                   sorter: { path: 'ProductId' }
+			                     }"
+                valueHelpRequest="onValueHelpRequestMaterial"
+            >
+                <core:Item
+                    id="_IDGenItemMaterial"
+                    key="{Materials>Name}"
+                    text="{Materials>ProductId}"
+                />
+            </MultiInput>
+            <Label
+                id="_IDLabelMRP"
+                text="MRP Area"
+            />
+            <MultiInput
+                width="40%"
+                id="_multiInputMRP"
+                showSuggestion="true"
+                suggestionItems="{ path: 'MRP>/MRPCollection',
+				                   sorter: { path: 'MRP' }
+			                     }"
+                valueHelpRequest="onValueHelpRequestMRP"
+            >
+                <core:Item
+                    id="_IDGenItemMRP"
+                    key="{MRP>MRP}"
+                    text="{MRP>Name}"
+                />
+            </MultiInput>
+            <Label
+                id="_IDLabelRegion"
+                text="Region"
+            />
+            <Input
+                id="_IDInputRegion"
+                width="10%"
+            />
+        </form:SimpleForm>
+    </Page>
+</mvc:View>

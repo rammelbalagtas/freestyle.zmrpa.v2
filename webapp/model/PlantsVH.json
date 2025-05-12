@@ -1,0 +1,12 @@
+{
+    "PlantsCollection": [
+        {
+            "Plant": "YYZA",
+            "Name": "1st inventory (Consumer)"
+        },
+        {
+            "Plant": "YYZB",
+            "Name": "1st inventory (Industrial)"
+        }
+    ]
+}

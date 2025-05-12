@@ -1,0 +1,78 @@
+{
+  "material_by_mrp_and_customer": {
+    "data": [
+      {
+        "name": "KXTGD390D",
+        "openDelivery": 3,
+        "boQty": 0,
+        "currentUNR": 300,
+        "currentQA": 30,
+        "currentBlock": 3,
+        "currentAvailable": 236,
+        "data": [
+          {
+            "name": "NSRST",
+            "openDelivery": 1,
+            "boQty": 0,
+            "currentUNR": 100,
+            "newUNR": 0,
+            "currentQA": 10,
+            "newQA": 0,
+            "currentBlock": 1,
+            "newBlock": 0,
+            "currentAvailable": 36,
+            "data": [
+              {
+                "name": "12185",
+                "currentAvailable": 0,
+                "newAvailable": 0
+              },
+              {
+                "name": "12186",
+                "currentAvailable": 0,
+                "newAvailable": 0
+              }
+            ]
+          },
+          {
+            "name": "NSRSE",
+            "openDelivery": 1,
+            "boQty": 0,
+            "currentUNR": 100,
+            "newUNR": 0,
+            "currentQA": 10,
+            "newQA": 0,
+            "currentBlock": 1,
+            "newBlock": 0,
+            "currentAvailable": 100,
+            "data": []
+          },
+          {
+            "name": "PAMZT",
+            "openDelivery": 1,
+            "boQty": 0,
+            "currentUNR": 100,
+            "newUNR": 0,
+            "currentQA": 10,
+            "newQA": 0,
+            "currentBlock": 1,
+            "newBlock": 0,
+            "currentAvailable": 100,
+            "data": [
+              {
+                "name": "13358",
+                "currentAvailable": 0,
+                "newAvailable": 0
+              },
+              {
+                "name": "13356",
+                "currentAvailable": 0,
+                "newAvailable": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

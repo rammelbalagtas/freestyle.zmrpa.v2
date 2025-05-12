@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog
+		id="selectDialogMRP"
+		title="MRP"
+		items="{MRP>/MRPCollection}"
+		search=".onValueHelpDialogSearchMRP"
+		confirm=".onValueHelpDialogCloseMRP"
+		cancel=".onValueHelpDialogCloseMRP"
+		multiSelect="true">
+		<StandardListItem id="_IDGenStandardListItemMRP"
+			title="{MRP>MRP}"
+			description="{MRP>Name}" />
+	</SelectDialog>
+</core:FragmentDefinition>
