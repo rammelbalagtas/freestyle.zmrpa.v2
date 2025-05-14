@@ -10,12 +10,12 @@ sap.ui.define([
 
 	return Controller.extend("freestyle.zmrpa.v2.controller.Main", {
 		onInit: function () {
-			const oModelPlantVH = new JSONModel("../model/PlantsVH.json");
-			this.getView().setModel(oModelPlantVH, "Plants");
-			const oModelMaterialVH = new JSONModel("../model/MaterialsVH.json");
-			this.getView().setModel(oModelMaterialVH, "Materials");
-			const oModelMRPVH = new JSONModel("../model/MRPVH.json");
-			this.getView().setModel(oModelMRPVH, "MRP");
+			//const oModelPlantVH = new JSONModel("../model/PlantsVH.json");
+			//this.getView().setModel(oModelPlantVH, "Plants");
+			//const oModelMaterialVH = new JSONModel("../model/MaterialsVH.json");
+			//this.getView().setModel(oModelMaterialVH, "Materials");
+			//const oModelMRPVH = new JSONModel("../model/MRPVH.json");
+			//this.getView().setModel(oModelMRPVH, "MRP");
 		},
 
 		onPressExecute: function () {
@@ -28,111 +28,79 @@ sap.ui.define([
 		},
 
 		onValueHelpRequestPlant: function (oEvent) {
-			var sInputValue = oEvent.getSource().getValue(),
-				oView = this.getView();
-			if (!this._pVHDialogPlant) {
-				this._pVHDialogPlant = Fragment.load({
-					id: oView.getId(),
-					name: "freestyle.zmrpa.v2.view.PlantValueHelp",
-					controller: this
-				}).then(function (oDialog) {
-					oView.addDependent(oDialog);
-					return oDialog;
+			if (!this._oValueHelpDialogPlant) {
+				this._oValueHelpDialogPlant = new sap.m.SelectDialog({
+					title: "Select Plant",
+					search: this._onValueHelpDialogSearchPlant.bind(this),
+					confirm: this._onValueHelpDialogClosePlant.bind(this),
+					cancel: this._onValueHelpDialogClosePlant.bind(this)
 				});
+				//bind items from OData V4
+				this._oValueHelpDialogPlant.bindAggregation("items", {
+					path: "MainData>/ZCE_PLANTVH",  // replace with your entity
+					parameters: { $select: "plant,name" },
+					template: new sap.m.StandardListItem({
+						title: "{MainData>plant}",
+						description: "{MainData>name}"
+					})
+				});
+				this.getView().addDependent(this._oValueHelpDialogPlant);
 			}
-			this._pVHDialogPlant.then(function (oDialog) {
-				// Create a filter for the binding
-				oDialog.getBinding("items").filter([new Filter("Plant", FilterOperator.Contains, sInputValue)]);
-				// Open ValueHelpDialog filtered by the input's value
-				oDialog.open(sInputValue);
-			});
+
+			// Open ValueHelpDialog filtered by the input's value
+			var sInputValue = oEvent.getSource().getValue();
+			this._oValueHelpDialogPlant.getBinding("items").filter([new Filter("plant", FilterOperator.Contains, sInputValue)]);
+			this._oValueHelpDialogPlant.open(sInputValue);
 		},
 
-		onValueHelpRequestMaterial: function (oEvent) {
-			var sInputValue = oEvent.getSource().getValue(),
-				oView = this.getView();
-			if (!this._pVHDialogMaterial) {
-				this._pVHDialogMaterial = Fragment.load({
-					id: oView.getId(),
-					name: "freestyle.zmrpa.v2.view.MaterialValueHelp",
-					controller: this
-				}).then(function (oDialog) {
-					oView.addDependent(oDialog);
-					return oDialog;
-				});
-			}
-			this._pVHDialogMaterial.then(function (oDialog) {
-				// Create a filter for the binding
-				oDialog.getBinding("items").filter([new Filter("ProductId", FilterOperator.Contains, sInputValue)]);
-				// Open ValueHelpDialog filtered by the input's value
-				oDialog.open(sInputValue);
-			});
-		},
-
-		onValueHelpRequestMRP: function (oEvent) {
-			var sInputValue = oEvent.getSource().getValue(),
-				oView = this.getView();
-			if (!this._pVHDialogMRP) {
-				this._pVHDialogMRP = Fragment.load({
-					id: oView.getId(),
-					name: "freestyle.zmrpa.v2.view.MRPValueHelp",
-					controller: this
-				}).then(function (oDialog) {
-					oView.addDependent(oDialog);
-					return oDialog;
-				});
-			}
-			this._pVHDialogMRP.then(function (oDialog) {
-				// Create a filter for the binding
-				oDialog.getBinding("items").filter([new Filter("MRP", FilterOperator.Contains, sInputValue)]);
-				// Open ValueHelpDialog filtered by the input's value
-				oDialog.open(sInputValue);
-			});
-		},
-
-		onValueHelpDialogSearchPlant: function (oEvent) {
-			debugger;
-			var sValue = oEvent.getParameter("value");
-			var oFilter = new Filter("Plant", FilterOperator.Contains, sValue);
+		_onValueHelpDialogSearchPlant: function (oEvent) {
+			let sValue = oEvent.getParameter("value");
+			let oFilter = new Filter("plant", FilterOperator.Contains, sValue);
 			oEvent.getSource().getBinding("items").filter([oFilter]);
 		},
 
-		onValueHelpDialogSearchMaterial: function (oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var oFilterName = new Filter("ProductId", FilterOperator.Contains, sValue);
-			oEvent.getSource().getBinding("items").filter([oFilterName]);
-		},
-
-		onValueHelpDialogSearchMRP: function (oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var oFilterName = new Filter("MRP", FilterOperator.Contains, sValue);
-			oEvent.getSource().getBinding("items").filter([oFilterName]);
-		},
-
-		onValueHelpDialogClosePlant: function (oEvent) {
-			var sDescription,
-				oSelectedItem = oEvent.getParameter("selectedItem");
-			oEvent.getSource().getBinding("items").filter([]);
-			if (!oSelectedItem) {
-				return;
+		_onValueHelpDialogClosePlant: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				let sTitle = oSelectedItem.getTitle();
+				this.getView().byId("_IDInputPlant").setValue(sTitle);
 			}
-			const sValue = oSelectedItem.getDescription();
-			this.byId("_IDInputPlant").setSelectedKey(sValue);
 		},
 
-		onValueHelpDialogCloseMaterial: function (oEvent) {
-			var aSelectedItems = oEvent.getParameter("selectedItems"),
-				oMultiInput = this.byId("_multiInputMaterial");
-			if (aSelectedItems && aSelectedItems.length > 0) {
-				aSelectedItems.forEach(function (oItem) {
-					oMultiInput.addToken(new Token({
-						text: oItem.getTitle()
-					}));
+		onValueHelpRequestMRP: function (oEvent) {
+			if (!this._oValueHelpDialog) {
+				this._oValueHelpDialogMRP = new sap.m.SelectDialog({
+					title: "Select MRP",
+					multiSelect: true,
+					search: this._onValueHelpDialogSearchMRP.bind(this),
+					confirm: this._onValueHelpDialogCloseMRP.bind(this),
+					cancel: this._onValueHelpDialogCloseMRP.bind(this)
 				});
+				//bind items from OData V4
+				this._oValueHelpDialogMRP.bindAggregation("items", {
+					path: "MainData>/ZCE_MRPVH",  // replace with your entity
+					parameters: { $select: "mrp,name" },
+					template: new sap.m.StandardListItem({
+						title: "{MainData>mrp}",
+						description: "{MainData>name}"
+					})
+				});
+				this.getView().addDependent(this._oValueHelpDialogMRP);
 			}
+
+			// Open ValueHelpDialog filtered by the input's value
+			var sInputValue = oEvent.getSource().getValue();
+			this._oValueHelpDialogMRP.getBinding("items").filter([new Filter("mrp", FilterOperator.Contains, sInputValue)]);
+			this._oValueHelpDialogMRP.open(sInputValue);
 		},
 
-		onValueHelpDialogCloseMRP: function (oEvent) {
+		_onValueHelpDialogSearchMRP: function (oEvent) {
+			let sValue = oEvent.getParameter("value");
+			let oFilter = new Filter("mrp", FilterOperator.Contains, sValue);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+
+		_onValueHelpDialogCloseMRP: function (oEvent) {
 			var aSelectedItems = oEvent.getParameter("selectedItems"),
 				oMultiInput = this.byId("_multiInputMRP");
 			if (aSelectedItems && aSelectedItems.length > 0) {
@@ -144,13 +112,49 @@ sap.ui.define([
 			}
 		},
 
-		onSuggestionItemSelectedPlant: function (oEvent) {
-			var oItem = oEvent.getParameter("selectedItem");
-			var oText = oItem ? oItem.getKey() : "";
+		onValueHelpRequestMaterial: function (oEvent) {
+			if (!this._oValueHelpDialog) {
+				this._oValueHelpDialogMaterial = new sap.m.SelectDialog({
+					title: "Select Material",
+					multiSelect: true,
+					search: this._onValueHelpDialogSearchMaterial.bind(this),
+					confirm: this._onValueHelpDialogCloseMaterial.bind(this),
+					cancel: this._onValueHelpDialogCloseMaterial.bind(this)
+				});
+				//bind items from OData V4
+				this._oValueHelpDialogMaterial.bindAggregation("items", {
+					path: "MainData>/ZCE_MATERIAL_VH",  // replace with your entity
+					parameters: { $select: "ProductId,name" },
+					template: new sap.m.StandardListItem({
+						title: "{MainData>ProductId}",
+						description: "{MainData>name}"
+					})
+				});
+				this.getView().addDependent(this._oValueHelpDialogMaterial);
+			}
+
+			// Open ValueHelpDialog filtered by the input's value
+			var sInputValue = oEvent.getSource().getValue();
+			this._oValueHelpDialogMaterial.getBinding("items").filter([new Filter("ProductId", FilterOperator.Contains, sInputValue)]);
+			this._oValueHelpDialogMaterial.open(sInputValue);
 		},
-		onSuggestionItemSelectedMaterial: function (oEvent) {
-			var oItem = oEvent.getParameter("selectedItem");
-			var oText = oItem ? oItem.getKey() : "";
+
+		_onValueHelpDialogSearchMaterial: function (oEvent) {
+			let sValue = oEvent.getParameter("value");
+			let oFilter = new Filter("ProductId", FilterOperator.Contains, sValue);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+
+		_onValueHelpDialogCloseMaterial: function (oEvent) {
+			var aSelectedItems = oEvent.getParameter("selectedItems"),
+				oMultiInput = this.byId("_multiInputMaterial");
+			if (aSelectedItems && aSelectedItems.length > 0) {
+				aSelectedItems.forEach(function (oItem) {
+					oMultiInput.addToken(new Token({
+						text: oItem.getTitle()
+					}));
+				});
+			}
 		}
 	});
 

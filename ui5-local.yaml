@@ -29,3 +29,18 @@ server:
       afterMiddleware: compression
       configuration:
         ignoreCertError: false # If set to true, certificate errors will be ignored. E.g. self-signed certificates will be accepted
+        backend:
+          - url: https://685bd85e-501d-43dd-b091-aa6811254f67.abap.us10.hana.ondemand.com
+            authenticationType: OAuth2UserTokenExchange
+            destination: BTP_ABAP
+            path: /sap
+    - name: sap-fe-mockserver
+      beforeMiddleware: csp
+      configuration:
+        mountPath: /
+        services:
+          - urlPath: /sap/opu/odata4/sap/zsb_mrpa_fs/srvd_a2x/sap/zsd_mrpa_fs/0001
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
+            generateMockData: true
+        annotations: []

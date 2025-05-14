@@ -31,3 +31,13 @@ server:
       configuration:
         component: freestyle.zmrpa.v2
         ui5Theme: sap_horizon
+    - name: sap-fe-mockserver
+      beforeMiddleware: csp
+      configuration:
+        mountPath: /
+        services:
+          - urlPath: /sap/opu/odata4/sap/zsb_mrpa_fs/srvd_a2x/sap/zsd_mrpa_fs/0001
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
+            generateMockData: true
+        annotations: []

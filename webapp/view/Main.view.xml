@@ -39,14 +39,14 @@
                 showValueHelp="true"
                 showSuggestion="true"
                 width="10%"
-                suggestionItems="{Plants>/PlantsCollection}"
+                suggestionItems="{MainData>/ZCE_PLANTVH}"
                 suggestionItemSelected=".onSuggestionItemSelectedPlant"
             >
                 <suggestionItems>
                     <core:ListItem
                         id="_IDGenListItemPlant"
-                        key="{Plants>Name}"
-                        text="{Plants>Plant}"
+                        key="{MainData>name}"
+                        text="{MainData>plant}"
                     />
                 </suggestionItems>
             </Input>
@@ -57,17 +57,10 @@
             <MultiInput
                 width="40%"
                 id="_multiInputMaterial"
-                showSuggestion="true"
-                suggestionItems="{ path: 'Materials>/MaterialsCollection',
-				                   sorter: { path: 'ProductId' }
-			                     }"
+
                 valueHelpRequest="onValueHelpRequestMaterial"
             >
-                <core:Item
-                    id="_IDGenItemMaterial"
-                    key="{Materials>Name}"
-                    text="{Materials>ProductId}"
-                />
+        
             </MultiInput>
             <Label
                 id="_IDLabelMRP"
