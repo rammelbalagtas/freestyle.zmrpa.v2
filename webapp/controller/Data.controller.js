@@ -51,7 +51,6 @@ sap.ui.define([
 				oAppData = this.getView().getModel("AppData");
 				oAppData.index = 0;
 
-				debugger;
 				//Get Storage object to use
 				const oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.session);
 				//Get data from Storage
@@ -82,8 +81,7 @@ sap.ui.define([
 					debugger;
 				}.bind(this);
 
-				debugger;
-				if (oAppData.Plant) {
+				if (oAppData.Plant !== null) {
 					oOperation.setParameter("plant", oAppData.Plant);
 					oOperation.setParameter("region", oAppData.Region);
 					oOperation.setParameter("material", "");
@@ -117,6 +115,23 @@ sap.ui.define([
 		},
 
 		onSave: function () {
+
+			var oData = this.getView().getModel("MainData");
+			var oOperation = oData.bindContext("/ZCE_MRPA_FS/com.sap.gateway.srvd_a2x.zsd_mrpa_fs.v0001.saveMRPData(...)");
+			//Success function to display success messages from OData Operation
+			var fnSuccess = function () {
+				var oResults = oOperation.getBoundContext().getObject();
+			}.bind(this);
+			//Error function to display error messages from OData Operation
+			var fnError = function (oError) {
+				debugger;
+			}.bind(this);
+
+			debugger;
+			var oTreeTableData = this.getView().getModel();
+			// Execute OData V4 operation i.e a static action to upload the file
+			oOperation.invoke().then(fnSuccess, fnError)
+
 			sap.ui.core.BusyIndicator.show();
 			setTimeout(() => {
 				// create any data and a model and set it to the view
@@ -200,12 +215,11 @@ sap.ui.define([
 		},
 
 		onChangeMRP: function (oEvent) {
-			debugger;
 			const sSpath = oEvent.getSource().getBindingContext().getPath();
 			const aPathSplit = sSpath.split("/");
 			if (aPathSplit.length > 0) {
-				const sRowMRP = aPathSplit[5];
-				const oMRP = this.getView().getModel().oData.material_by_mrp_and_customer.data[0].data[sRowMRP];
+				const sRowMRP = aPathSplit[3];
+				const oMRP = this.getView().getModel().oData[0].data[sRowMRP];
 				//change the values at customer level
 				if (oMRP.data.length > 0) {
 					const aCustomer = oMRP.data;
@@ -219,12 +233,12 @@ sap.ui.define([
 		},
 
 		onChangeNewAvailable: function (oEvent) {
+			debugger;
 			const sSpath = oEvent.getSource().getBindingContext().getPath();
 			const aPathSplit = sSpath.split("/");
-			debugger;
 			if (aPathSplit.length > 0) {
-				const sRowMRP = aPathSplit[5];
-				const oMRP = this.getView().getModel().oData.material_by_mrp_and_customer.data[0].data[sRowMRP];
+				const sRowMRP = aPathSplit[3];
+				const oMRP = this.getView().getModel().oData[0].data[sRowMRP];
 				//sum the values at customer level and append to MRP area level
 				if (oMRP.data.length > 0) {
 					const aCustomer = oMRP.data;
@@ -232,7 +246,7 @@ sap.ui.define([
 					for (let i = 0; i < aCustomer.length; i++) {
 						totalCustomer = Number(totalCustomer) + Number(aCustomer[i].newAvailable)
 					}
-					this.getView().getModel().oData.material_by_mrp_and_customer.data[0].data[sRowMRP].newUNR = totalCustomer;
+					this.getView().getModel().oData[0].data[sRowMRP].newUNR = totalCustomer;
 				}
 			}
 		},
