@@ -43,26 +43,55 @@ sap.ui.define([
 			const oModel = new JSONModel();
 			this.getView().setModel(oModel);
 			this.removeMessageView();
+
 			sap.ui.core.BusyIndicator.show();
 			setTimeout(() => {
-				//reload first JSON file
-				const oModel = new JSONModel("../model/data/Data1.json");
-				this.getView().setModel(oModel);
-				const oTreeTable = this.byId("TreeTable");
-				oTreeTable.expandToLevel(1);
-				this.byId("_IDGenPreviousMaterial").setEnabled(false);
 
 				//set index of first JSON file
 				oAppData = this.getView().getModel("AppData");
 				oAppData.index = 0;
 
+				debugger;
 				//Get Storage object to use
 				const oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.session);
 				//Get data from Storage
 				const localdata = oStorage.get("myLocalData");
-				//Set data into Storage
-				oStorage.put("myLocalData", oAppData);
-				sap.ui.core.BusyIndicator.hide();
+				if (localdata) {
+					//Set data into Storage
+					oStorage.put("myLocalData", oAppData);
+				}
+
+				var oData = this.getView().getModel("MainData");
+				var oOperation = oData.bindContext("/ZCE_MRPA_FS/com.sap.gateway.srvd_a2x.zsd_mrpa_fs.v0001.getMRPData(...)");
+				//Success function to display success messages from OData Operation
+				var fnSuccess = function () {
+					var oResults = oOperation.getBoundContext().getObject();
+					if (oResults.value.length > 0) {
+
+						this.getView().setModel(new JSONModel(oResults.value));
+
+						const oTreeTable = this.byId("TreeTable");
+						oTreeTable.expandToLevel(1);
+						this.byId("_IDGenPreviousMaterial").setEnabled(false);
+
+
+					}
+				}.bind(this);
+				//Error function to display error messages from OData Operation
+				var fnError = function (oError) {
+					debugger;
+				}.bind(this);
+
+				debugger;
+				if (oAppData.Plant) {
+					oOperation.setParameter("plant", oAppData.Plant);
+					oOperation.setParameter("region", oAppData.Region);
+					oOperation.setParameter("material", "");
+					oOperation.setParameter("matrange", oAppData.Material)
+					oOperation.setParameter("mrprange", oAppData.MRP);
+				}
+				// Execute OData V4 operation i.e a static action to upload the file
+				oOperation.invoke().then(fnSuccess, fnError)
 
 				var oMessage = new JSONModel();
 				oMessage.setData([]);

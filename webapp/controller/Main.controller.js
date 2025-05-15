@@ -19,10 +19,34 @@ sap.ui.define([
 		},
 
 		onPressExecute: function () {
-			const oModel = this.getView().getModel("AppData");
+			const oAppData = this.getView().getModel("AppData");
+			
 			const sPlant = this.byId("_IDInputPlant").getValue();
-			oModel.Plant = sPlant;
-			this.getView().setModel(oModel, "AppData");
+			oAppData.Plant = sPlant;
+			
+			const sRegion = this.byId("_IDInputRegion").getValue();
+			oAppData.Region = sRegion;
+
+			var aMaterial = [];
+			var oInputMaterial = this.byId("_multiInputMaterial");
+			if (oInputMaterial) {
+				const aInputMaterial = oInputMaterial.getTokens();
+				if (aInputMaterial.length > 0) {
+					aInputMaterial.forEach(function (material) { aMaterial.push({material: material.getText()}) });
+				}
+			}
+			oAppData.Material = aMaterial;
+			var aMRP = [];
+			var oInputMRP = this.byId("_multiInputMRP");
+			if (oInputMRP) {
+				const aInputMRP = oInputMRP.getTokens();
+				if (aInputMRP.length > 0) {
+					aInputMRP.forEach(function (mrp) { aMRP.push({mrp: mrp.getText()}) });
+				}
+			}
+			oAppData.MRP = aMRP;
+			this.getView().setModel(oAppData, "AppData");
+
 			const oRouter = this.getOwnerComponent().getRouter();
 			oRouter.navTo("RouteData");
 		},

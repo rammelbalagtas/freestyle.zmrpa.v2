@@ -17,7 +17,7 @@
         <m:content>
             <TreeTable
                 id="TreeTable"
-                rows="{path:'/material_by_mrp_and_customer', parameters: { arrayNames:['data']}}"
+                rows="{path:'/'}"
                 selectionMode="None"
                 rowsUpdated=".onRowsUpdated"
                 fixedColumnCount="1"
