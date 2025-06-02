@@ -50,6 +50,8 @@ sap.ui.define([
 				//set index of first JSON file
 				oAppData = this.getView().getModel("AppData");
 				oAppData.index = 0;
+				oAppData.materialCount = 0;
+				oAppData.matlist = [];
 
 				//Get Storage object to use
 				const oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.session);
@@ -64,21 +66,25 @@ sap.ui.define([
 				var oOperation = oData.bindContext("/ZCE_MRPA_FS/com.sap.gateway.srvd_a2x.zsd_mrpa_fs.v0001.getMRPData(...)");
 				//Success function to display success messages from OData Operation
 				var fnSuccess = function () {
+					debugger;
 					var oResults = oOperation.getBoundContext().getObject();
 					if (oResults.value.length > 0) {
-
 						this.getView().setModel(new JSONModel(oResults.value));
-
 						const oTreeTable = this.byId("TreeTable");
 						oTreeTable.expandToLevel(1);
+						oAppData.matlist = oResults.value[0].matlist;
+						oAppData.materialCount = oAppData.matlist.length;
 						this.byId("_IDGenPreviousMaterial").setEnabled(false);
-
-
+						if (oAppData.materialCount > 1) {
+							this.byId("_IDGenNextMaterial").setEnabled(true);
+						}
+						sap.ui.core.BusyIndicator.hide();
 					}
 				}.bind(this);
 				//Error function to display error messages from OData Operation
 				var fnError = function (oError) {
 					debugger;
+					sap.ui.core.BusyIndicator.hide();
 				}.bind(this);
 
 				if (oAppData.Plant !== null) {
@@ -94,8 +100,7 @@ sap.ui.define([
 				var oMessage = new JSONModel();
 				oMessage.setData([]);
 				this.getView().setModel(oMessage, "messages");
-				sap.ui.core.BusyIndicator.hide();
-			}, "2000");
+			}, "3000");
 
 		},
 
@@ -121,14 +126,25 @@ sap.ui.define([
 			//Success function to display success messages from OData Operation
 			var fnSuccess = function () {
 				var oResults = oOperation.getBoundContext().getObject();
+				debugger;
 			}.bind(this);
 			//Error function to display error messages from OData Operation
 			var fnError = function (oError) {
 				debugger;
 			}.bind(this);
 
+			var oTreeTableData = this.getView().getModel().getData();
+			var data = oTreeTableData[0];
+			oOperation.setParameter("name", data.name);
+			oOperation.setParameter("openDelivery", data.openDelivery);
+			oOperation.setParameter("boQty", data.boQty);
+			oOperation.setParameter("currentUNR", data.currentUNR);
+			oOperation.setParameter("currentQA", data.currentQA);
+			oOperation.setParameter("currentBlock", data.currentBlock);
+			oOperation.setParameter("currentAvailable", data.currentAvailable);
+			oOperation.setParameter("matlist", []);
+			oOperation.setParameter("data", data.data);
 			debugger;
-			var oTreeTableData = this.getView().getModel();
 			// Execute OData V4 operation i.e a static action to upload the file
 			oOperation.invoke().then(fnSuccess, fnError)
 
@@ -225,7 +241,7 @@ sap.ui.define([
 					const aCustomer = oMRP.data;
 					const sEachCustomer = (Number(oMRP.newUNR) + Number(oMRP.newBlock) + Number(oMRP.newQA)) / aCustomer.length;
 					for (let i = 0; i < aCustomer.length; i++) {
-						aCustomer[i].newAvailable = sEachCustomer;
+						aCustomer[i].newAvailable = sEachCustomer.toString();
 					}
 					oEvent.getSource().getParent().expand();
 				}
@@ -246,14 +262,14 @@ sap.ui.define([
 					for (let i = 0; i < aCustomer.length; i++) {
 						totalCustomer = Number(totalCustomer) + Number(aCustomer[i].newAvailable)
 					}
-					this.getView().getModel().oData[0].data[sRowMRP].newUNR = totalCustomer;
+					this.getView().getModel().oData[0].data[sRowMRP].newUNR = totalCustomer.toString();
 				}
 			}
 		},
 
 		onNextMaterial: function () {
 			sap.ui.core.BusyIndicator.show();
-			setTimeout(() => {
+			/*setTimeout(() => {
 				this.removeMessageView();
 				oAppData.index++;
 				if (oAppData.index > 0) {
@@ -267,12 +283,51 @@ sap.ui.define([
 				this.getView().setModel(oModel);
 				const oTreeTable = this.byId("TreeTable");
 				oTreeTable.expandToLevel(1);
-			}, "2000");
+			}, "2000"); */
+
+			setTimeout(() => {
+				this.removeMessageView();
+				oAppData.index++;
+				if (oAppData.index > 0) {
+					this.byId("_IDGenPreviousMaterial").setEnabled(true);
+				}
+				if (oAppData.index === (oAppData.materialCount - 1)) {
+					this.byId("_IDGenNextMaterial").setEnabled(false);
+				}
+
+				var oData = this.getView().getModel("MainData");
+				var oOperation = oData.bindContext("/ZCE_MRPA_FS/com.sap.gateway.srvd_a2x.zsd_mrpa_fs.v0001.getMRPData(...)");
+				//Success function to display success messages from OData Operation
+				var fnSuccess = function () {
+					debugger;
+					var oResults = oOperation.getBoundContext().getObject();
+					if (oResults.value.length > 0) {
+						this.getView().setModel(new JSONModel(oResults.value));
+						const oTreeTable = this.byId("TreeTable");
+						oTreeTable.expandToLevel(1);
+					}
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this);
+				//Error function to display error messages from OData Operation
+				var fnError = function (oError) {
+					debugger;
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this);
+
+				oOperation.setParameter("plant", oAppData.Plant);
+				oOperation.setParameter("region", oAppData.Region);
+				oOperation.setParameter("material", oAppData.matlist[oAppData.index].material);
+				oOperation.setParameter("matrange", [])
+				oOperation.setParameter("mrprange", oAppData.MRP);
+				// Execute OData V4 operation i.e a static action to upload the file
+				oOperation.invoke().then(fnSuccess, fnError)
+			}, "3000");
+
 		},
 
 		onPreviousMaterial: function () {
 			sap.ui.core.BusyIndicator.show();
-			setTimeout(() => {
+			/*setTimeout(() => {
 				this.removeMessageView();
 				oAppData.index--;
 				if (oAppData.index === 0) {
@@ -288,17 +343,76 @@ sap.ui.define([
 				this.getView().setModel(oModel);
 				const oTreeTable = this.byId("TreeTable");
 				oTreeTable.expandToLevel(1);
-			}, "2000");
+			}, "2000"); */
+			setTimeout(() => {
+				this.removeMessageView();
+				oAppData.index--;
+				if (oAppData.index === 0) {
+					this.byId("_IDGenPreviousMaterial").setEnabled(false);
+				}
+				if (oAppData.index < (oAppData.materialCount - 1)) {
+					this.byId("_IDGenNextMaterial").setEnabled(true);
+				}
+
+				var oData = this.getView().getModel("MainData");
+				var oOperation = oData.bindContext("/ZCE_MRPA_FS/com.sap.gateway.srvd_a2x.zsd_mrpa_fs.v0001.getMRPData(...)");
+				//Success function to display success messages from OData Operation
+				var fnSuccess = function () {
+					debugger;
+					var oResults = oOperation.getBoundContext().getObject();
+					if (oResults.value.length > 0) {
+						this.getView().setModel(new JSONModel(oResults.value));
+						const oTreeTable = this.byId("TreeTable");
+						oTreeTable.expandToLevel(1);
+					}
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this);
+				//Error function to display error messages from OData Operation
+				var fnError = function (oError) {
+					debugger;
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this);
+
+				oOperation.setParameter("plant", oAppData.Plant);
+				oOperation.setParameter("region", oAppData.Region);
+				oOperation.setParameter("material", oAppData.matlist[oAppData.index].material);
+				oOperation.setParameter("matrange", [])
+				oOperation.setParameter("mrprange", oAppData.MRP);
+				// Execute OData V4 operation i.e a static action to upload the file
+				oOperation.invoke().then(fnSuccess, fnError)
+			}, "3000");
 		},
 
 		onRefresh: function () {
 			this.removeMessageView();
 			sap.ui.core.BusyIndicator.show();
 			setTimeout(() => {
-				const oModel = new JSONModel(this.JSONData[oAppData.index]);
-				this.getView().setModel(oModel);
-				const oTreeTable = this.byId("TreeTable");
-				oTreeTable.expandToLevel(1);
+				var oData = this.getView().getModel("MainData");
+				var oOperation = oData.bindContext("/ZCE_MRPA_FS/com.sap.gateway.srvd_a2x.zsd_mrpa_fs.v0001.getMRPData(...)");
+				//Success function to display success messages from OData Operation
+				var fnSuccess = function () {
+					debugger;
+					var oResults = oOperation.getBoundContext().getObject();
+					if (oResults.value.length > 0) {
+						this.getView().setModel(new JSONModel(oResults.value));
+						const oTreeTable = this.byId("TreeTable");
+						oTreeTable.expandToLevel(1);
+					}
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this);
+				//Error function to display error messages from OData Operation
+				var fnError = function (oError) {
+					debugger;
+					sap.ui.core.BusyIndicator.hide();
+				}.bind(this);
+
+				oOperation.setParameter("plant", oAppData.Plant);
+				oOperation.setParameter("region", oAppData.Region);
+				oOperation.setParameter("material", oAppData.matlist[oAppData.index].material);
+				oOperation.setParameter("matrange", [])
+				oOperation.setParameter("mrprange", oAppData.MRP);
+				// Execute OData V4 operation i.e a static action to upload the file
+				oOperation.invoke().then(fnSuccess, fnError)
 				sap.ui.core.BusyIndicator.hide();
 			}, "2000");
 		},
